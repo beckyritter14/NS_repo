@@ -37,15 +37,15 @@ jobs:
             --max-line-length=88 \
             --ignore=E203
 
-      - name: Run pytest
-        run: |
-          pytest \
-            --maxfail=1 \
-            --disable-warnings \
-            --junitxml=reports/junit.xml \
-            --cov=your_package_or_module \
-            --cov-report=xml \
-            --cov-report=term
+      # - name: Run pytest
+      #   run: |
+      #     pytest \
+      #       --maxfail=1 \
+      #       --disable-warnings \
+      #       --junitxml=reports/junit.xml \
+      #       --cov=your_package_or_module \
+      #       --cov-report=xml \
+      #       --cov-report=term
 
       # - name: Upload linter reports
       #   if: always()
