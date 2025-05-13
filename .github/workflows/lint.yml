@@ -29,39 +29,19 @@ jobs:
           pylint sample_module.py \
             --exit-zero \
             --output-format=colorized \
-            --disable=R,C > pylint.report.txt || true
+            --disable=R,C || true
 
-      - name: Run pycodestyle (pep8)
+      - name: Run pycodestyle
         run: |
           pycodestyle . \
             --max-line-length=88 \
-            --ignore=E203 > pycodestyle.report.txt || true
+            --ignore=E203 || true
 
       - name: Run pytest
         run: |
-          mkdir -p reports
           pytest \
             --maxfail=1 \
             --disable-warnings \
-            --junitxml=reports/junit.xml \
             --cov=sample_module \
-            --cov-report=xml \
-            --cov-report=term
-
-      - name: Upload linter reports
-        if: always()
-        uses: actions/upload-artifact@v2.3.1
-        with:
-          name: lint-reports
-          path: |
-            pylint.report.txt
-            pycodestyle.report.txt
-
-      - name: Upload test reports
-        if: always()
-        uses: actions/upload-artifact@v2.3.1
-        with:
-          name: test-reports
-          path: |
-            reports/junit.xml
-            coverage.xml
+            --cov-report=term \
+            --cov-report=xml
