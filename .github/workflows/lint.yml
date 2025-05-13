@@ -37,11 +37,11 @@ jobs:
             --max-line-length=88 \
             --ignore=E203 > pycodestyle.report.txt || true
 
-      - name: Upload linter reports
-        if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: lint-reports
-          path: |
-            pylint.report.txt
-            pycodestyle.report.txt
+      # - name: Upload linter reports
+      #   if: always()
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: lint-reports
+      #     path: |
+      #       pylint.report.txt
+      #       pycodestyle.report.txt
