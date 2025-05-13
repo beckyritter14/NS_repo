@@ -78,20 +78,26 @@ jobs:
           done
           # pydoc writes files like your_package_or_module.html into cwd
           mv *.html docs/
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Sync docs to S3
+      # Optional: Upload pydoc HTML files to GitHub Actions artifacts
+      # (only works if your runner allows upload-artifact)
+      # If not, you can output it in logs instead:
+      - name: Print pydoc HTML preview
         run: |
-          # Sync the docs/ folder to the S3 bucket. Versioning on the bucket ensures upserts.
-          aws s3 sync docs/ s3://${{ secrets.S3_BUCKET_NAME }}/docs/ \
-            --delete
+          head -n 40 docs/sample_module.html || echo "No docs generated"
 
-      # Optionally record the docs URL as an output
-      - name: Show docs URL
-        run: echo "Docs available at: https://${{ secrets.S3_BUCKET_NAME }}.s3.amazonaws.com/docs/index.html"
+      # - name: Configure AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v2
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: ${{ secrets.AWS_REGION }}
+
+      # - name: Sync docs to S3
+      #   run: |
+      #     # Sync the docs/ folder to the S3 bucket. Versioning on the bucket ensures upserts.
+      #     aws s3 sync docs/ s3://${{ secrets.S3_BUCKET_NAME }}/docs/ \
+      #       --delete
+
+      # # Optionally record the docs URL as an output
+      # - name: Show docs URL
+      #   run: echo "Docs available at: https://${{ secrets.S3_BUCKET_NAME }}.s3.amazonaws.com/docs/index.html"
