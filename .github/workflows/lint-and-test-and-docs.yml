@@ -47,23 +47,23 @@ jobs:
             --cov-report=xml \
             --cov-report=term
 
-      - name: Upload linter reports
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: lint-reports
-          path: |
-            pylint.*.txt
-            pycodestyle-report.txt
+      # - name: Upload linter reports
+      #   if: always()
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: lint-reports
+      #     path: |
+      #       pylint.*.txt
+      #       pycodestyle-report.txt
 
-      - name: Upload test reports
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-reports
-          path: |
-            reports/junit.xml
-            coverage.xml
+      # - name: Upload test reports
+      #   if: always()
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: test-reports
+      #     path: |
+      #       reports/junit.xml
+      #       coverage.xml
 
       # ——————————————
       # New: Generate and upload docs
