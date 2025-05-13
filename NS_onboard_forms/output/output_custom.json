@@ -1,0 +1,14 @@
+{
+  "data": [
+    {
+      "jobId": 101,
+      "profile": {
+        "fullName": "LOAD_CUSTOMERS"
+      },
+      "metrics": {
+        "type": "REST"
+      }
+    }
+  ],
+  "count": 1
+}
