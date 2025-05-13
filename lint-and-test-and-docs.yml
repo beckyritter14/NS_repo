@@ -1,0 +1,97 @@
+# .github/workflows/lint-and-test-and-docs.yml
+name: CI (Lint, Test & Docs)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint pycodestyle pytest pytest-cov
+
+      - name: Run pylint
+        run: |
+          pylint your_package_or_module \
+            --exit-zero \
+            --output-format=colorized \
+            --disable=R,C
+
+      - name: Run pycodestyle (pep8)
+        run: |
+          pycodestyle . \
+            --max-line-length=88 \
+            --ignore=E203
+
+      - name: Run pytest
+        run: |
+          pytest \
+            --maxfail=1 \
+            --disable-warnings \
+            --junitxml=reports/junit.xml \
+            --cov=your_package_or_module \
+            --cov-report=xml \
+            --cov-report=term
+
+      - name: Upload linter reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: lint-reports
+          path: |
+            pylint.*.txt
+            pycodestyle-report.txt
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-reports
+          path: |
+            reports/junit.xml
+            coverage.xml
+
+      # ——————————————
+      # New: Generate and upload docs
+      # ——————————————
+
+      - name: Generate pydoc HTML
+        run: |
+          mkdir -p docs
+          # Generate HTML for each module in your package
+          for pkg in your_package_or_module; do
+            pydoc -w "$pkg"
+          done
+          # pydoc writes files like your_package_or_module.html into cwd
+          mv *.html docs/
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Sync docs to S3
+        run: |
+          # Sync the docs/ folder to the S3 bucket. Versioning on the bucket ensures upserts.
+          aws s3 sync docs/ s3://${{ secrets.S3_BUCKET_NAME }}/docs/ \
+            --delete
+
+      # Optionally record the docs URL as an output
+      - name: Show docs URL
+        run: echo "Docs available at: https://${{ secrets.S3_BUCKET_NAME }}.s3.amazonaws.com/docs/index.html"
