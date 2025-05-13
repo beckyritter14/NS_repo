@@ -73,7 +73,7 @@ jobs:
         run: |
           mkdir -p docs
           # Generate HTML for each module in your package
-          for pkg in your_package_or_module; do
+          for pkg in sample_module; do
             pydoc -w "$pkg"
           done
           # pydoc writes files like your_package_or_module.html into cwd
