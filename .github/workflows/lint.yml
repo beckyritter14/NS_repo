@@ -1,4 +1,4 @@
-name: Lint & Test
+name: Lint
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  lint-and-test:
+  lint:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,30 +19,29 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install tools
+      - name: Install linting tools
         run: |
           python -m pip install --upgrade pip
-          pip install pylint pycodestyle pytest pytest-cov
+          pip install pylint pycodestyle
 
       - name: Run pylint
         run: |
           pylint sample_module.py \
             --exit-zero \
             --output-format=colorized \
-            --disable=R,C || true
+            --disable=R,C > pylint.report.txt || true
 
       - name: Run pycodestyle
         run: |
           pycodestyle . \
             --max-line-length=88 \
-            --ignore=E203 || true
+            --ignore=E203 > pycodestyle.report.txt || true
 
-      - name: Upload linter reports 
       - name: Upload linter reports
-        if: always() 
+        if: always()
         uses: actions/upload-artifact@v2
-        with: 
+        with:
           name: lint-reports
-          path: | 
+          path: |
             pylint.report.txt
             pycodestyle.report.txt
